@@ -1,0 +1,133 @@
+// Naturel Çiçekçilik database schema
+// Ported from MySQL (izmirnat_flowershop) to PostgreSQL
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Admin {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique @db.VarChar(50)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  name         String   @db.VarChar(100)
+  isSuperadmin Boolean  @default(false) @map("is_superadmin")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  @@map("admins")
+}
+
+model Category {
+  id          Int               @id @default(autoincrement())
+  name        String            @db.VarChar(100)
+  slug        String            @unique @db.VarChar(100)
+  description String?
+  image       String?           @db.VarChar(255)
+  isActive    Boolean           @default(true) @map("is_active")
+  createdAt   DateTime          @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt   DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+  products    ProductCategory[]
+
+  @@map("categories")
+}
+
+model Product {
+  id                 Int               @id @default(autoincrement())
+  name               String            @db.VarChar(255)
+  isActive           Boolean           @default(true) @map("is_active")
+  isFeatured         Boolean           @default(false) @map("is_featured")
+  slug               String?           @unique @db.VarChar(255)
+  isMainPage         Boolean?          @map("ismainpage")
+  price              Decimal           @db.Decimal(10, 2)
+  image              String?           @db.VarChar(255)
+  availableDays      String?           @map("available_days") @db.VarChar(255)
+  availableDistricts String?           @map("available_districts") @db.VarChar(255)
+  availableHours     String?           @map("available_hours") @db.VarChar(255)
+  createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamp(6)
+  description        String?
+  categories         ProductCategory[]
+  orders             Order[]
+
+  @@map("products")
+}
+
+model ProductCategory {
+  productId  Int      @map("product_id")
+  categoryId Int      @map("category_id")
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, categoryId])
+  @@index([categoryId])
+  @@map("product_categories")
+}
+
+model DeliveryHour {
+  id        Int      @id @default(autoincrement())
+  timeSlot  String   @map("time_slot") @db.VarChar(50)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  @@map("delivery_hours")
+}
+
+enum PaymentStatus {
+  pending
+  paid
+
+  @@map("payment_status")
+}
+
+model Order {
+  id               Int           @id @default(autoincrement())
+  productId        Int?          @map("product_id")
+  merchantOid      String?       @unique @map("merchant_oid") @db.VarChar(255)
+  totalAmount      Int?          @map("total_amount")
+  senderName       String?       @map("sender_name") @db.VarChar(255)
+  senderSurname    String?       @map("sender_surname") @db.VarChar(255)
+  senderPhone      String?       @map("sender_phone") @db.VarChar(20)
+  senderEmail      String?       @map("sender_email") @db.VarChar(255)
+  senderAddress    String?       @map("sender_address")
+  recipientName    String?       @map("recipient_name") @db.VarChar(255)
+  recipientSurname String?       @map("recipient_surname") @db.VarChar(255)
+  recipientPhone   String?       @map("recipient_phone") @db.VarChar(255)
+  recipientAddress String?       @map("recipient_address")
+  recipientCity    String?       @map("recipient_city") @db.VarChar(255)
+  district         String?       @db.VarChar(100)
+  deliveryDay      DateTime?     @map("delivery_day") @db.Date
+  deliveryHour     String?       @map("delivery_hour") @db.VarChar(50)
+  note             String?
+  isAnonymous      Boolean       @default(false) @map("is_anonymous")
+  paymentStatus    PaymentStatus @default(pending) @map("payment_status")
+  orderDate        DateTime?     @map("order_date") @db.Timestamp(6)
+  orderStatus      String        @default("hazırlanıyor") @map("order_status") @db.VarChar(50)
+  createdAt        DateTime      @default(now()) @map("created_at") @db.Timestamp(6)
+  product          Product?      @relation(fields: [productId], references: [id])
+
+  @@index([productId])
+  @@index([paymentStatus])
+  @@map("orders")
+}
+
+model Setting {
+  id           Int     @id @default(autoincrement())
+  settingKey   String  @unique @map("setting_key") @db.VarChar(255)
+  settingValue String? @map("setting_value")
+
+  @@map("settings")
+}
+
+model BankAccount {
+  id        Int      @id @default(autoincrement())
+  bankName  String   @map("bank_name") @db.VarChar(255)
+  holder    String   @db.VarChar(255)
+  iban      String   @db.VarChar(50)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  @@map("bank_accounts")
+}

@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Naturel Çiçekçilik — Next.js
 
-## Getting Started
+İzmir Naturel Çiçekçilik için Next.js 16 + Prisma 7 + PostgreSQL ile yazılmış
+e-ticaret sitesi. Lukani şablon estetiği, Türkçe arayüz, tek-ürün checkout akışı,
+Shopier ödeme entegrasyonu, tam donanımlı admin paneli.
 
-First, run the development server:
+## Yapı
+
+| Yol | Açıklama |
+|-----|----------|
+| `src/app/(site)/` | Halka açık sayfalar — Header/Footer ile |
+| `src/app/admin/(auth)/login/` | Yönetici giriş ekranı |
+| `src/app/admin/(panel)/` | Korumalı admin sayfaları (dashboard + CRUD) |
+| `src/app/api/` | API endpointleri (checkout, shopier callback, admin CRUD) |
+| `src/components/` | UI bileşenleri |
+| `src/lib/` | DB client, auth, format, Shopier, SEO yardımcıları |
+| `prisma/schema.prisma` | Postgres veritabanı şeması |
+| `prisma/seed.ts` | Orijinal MySQL dump'ından veri import script'i |
+| `public/products/` | 185+ ürün görseli |
+
+## Lokal Geliştirme
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env
+# .env içindeki DATABASE_URL'i lokal Postgres'inle doldur
+# (Lokal Postgres yoksa Neon.tech free tier en kolayı)
+
+npm run db:push     # Şemayı veritabanına uygula
+npm run db:seed     # 131 ürün + 7 kategoriyi import et
+npm run dev         # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Admin girişi: `/admin/login`
+Default kullanıcı: `admin` / şifre orijinal MySQL dump'taki bcrypt hash.
+Bilmiyorsan, seed sonrası `npx prisma studio` ile admin tablosuna
+yeni bir bcrypt hash yazabilirsin.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Vercel Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Bu klasörü Git repo'sa push et.
+2. [vercel.com](https://vercel.com) → **Add New** → **Project** → repo'yu seç.
+3. **Storage** sekmesinden Postgres ekle (Neon entegrasyonu). Vercel
+   otomatik olarak `DATABASE_URL` env değişkenini doldurur.
+4. **Environment Variables** kısmından şunları ekle:
+   - `SESSION_PASSWORD` — `openssl rand -base64 48` ile üret
+   - `SHOPIER_API_KEY`, `SHOPIER_API_SECRET`, `SHOPIER_WEBSITE_INDEX` — Shopier panelinden
+   - `NEXT_PUBLIC_SITE_URL` — `https://senin-domain.com`
+5. Deploy et.
+6. İlk deploy sonrası lokal'den:
+   ```bash
+   vercel env pull .env.production.local
+   DATABASE_URL=... npx prisma db push
+   DATABASE_URL=... npm run db:seed
+   ```
 
-## Learn More
+## Shopier Entegrasyonu
 
-To learn more about Next.js, take a look at the following resources:
+`SHOPIER_*` değişkenleri boşken sipariş veritabanına kaydedilir ama
+ödeme sayfasına yönlendirme yapılmaz — kullanıcıya "ödeme şu an
+alınamıyor, sizi arayacağız" mesajı gösterilir. Credentials eklenince
+otomatik olarak Shopier'e POST edilen form çalışmaya başlar.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Webhook URL'si Shopier paneline girilirken:
+```
+https://senin-domain.com/api/shopier/callback
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Özellikler
 
-## Deploy on Vercel
+- Lukani-vari minimalist tasarım (Tailwind 4)
+- 4 adımlı sipariş akışı (gönderici / alıcı / teslimat / özet)
+- Admin: ürün CRUD, kategori CRUD, sipariş yönetimi, teslimat saatleri, KDV ayarı
+- Sipariş takip sayfası (merchant_oid ile)
+- ISR ile anasayfa / kategori / ürün sayfaları
+- Tüm görseller `next/image` ile otomatik optimize
+- SEO: dinamik sitemap.xml, robots.txt, JSON-LD Florist schema
+- Sessions: iron-session (cookie-based, signed)
+- Admin auth: bcrypt (PHP `$2y$` hash'leriyle uyumlu)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Senaryolar
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Yeni ürün eklemek**: Admin → Ürünler → "+ Yeni Ürün". Görsel
+  yolunu `/products/dosya.png` formatında ver; resmi public/products/
+  altına el ile koyman gerekir (veya Vercel Blob entegrasyonu ekle).
+- **Sipariş durumunu değiştirmek**: Admin → Siparişler → Detay → üst
+  sağdaki iki dropdown.
+- **KDV gizlemek/açmak**: Admin → Ayarlar → "Fiyatlara KDV dahil" checkbox.
