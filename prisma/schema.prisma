@@ -51,6 +51,7 @@ model Product {
   description        String?
   categories         ProductCategory[]
   orders             Order[]
+  pageViews          PageView[]
 
   @@map("products")
 }
@@ -130,4 +131,20 @@ model BankAccount {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(6)
 
   @@map("bank_accounts")
+}
+
+model PageView {
+  id        Int      @id @default(autoincrement())
+  visitorId String?  @map("visitor_id") @db.VarChar(64)
+  path      String   @db.VarChar(500)
+  productId Int?     @map("product_id")
+  referrer  String?  @db.VarChar(500)
+  userAgent String?  @map("user_agent") @db.VarChar(500)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([productId])
+  @@index([visitorId])
+  @@map("page_views")
 }

@@ -89,3 +89,38 @@ body {
   list-style: decimal;
   padding-left: 1.25rem;
 }
+
+.printable-slip {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .printable-slip,
+  .printable-slip * {
+    visibility: visible;
+  }
+
+  .printable-slip {
+    display: block !important;
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    min-height: auto;
+    padding: 0;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+}
