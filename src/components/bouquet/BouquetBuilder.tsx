@@ -3,15 +3,13 @@
 import { useMemo, useState } from "react";
 import { Minus, Plus, RotateCcw, Sparkles } from "lucide-react";
 import {
-  EXTRAS,
-  FLOWERS,
   MAX_STEMS,
   MIN_STEMS,
   PRESETS,
-  WRAPS,
   describeBouquet,
   priceBouquet,
   stemCount,
+  type BouquetCatalog,
   type Selection,
 } from "@/lib/bouquet";
 import { formatPrice } from "@/lib/format";
@@ -27,8 +25,10 @@ const GROUPS: { id: "gul" | "mevsim" | "yesillik"; label: string; hint: string }
 
 export function BouquetBuilder({
   deliveryHours,
+  catalog,
 }: {
   deliveryHours: { id: number; timeSlot: string }[];
+  catalog: BouquetCatalog;
 }) {
   const [selection, setSelection] = useState<Selection>(PRESETS[0].selection);
   const [wrapId, setWrapId] = useState(PRESETS[0].wrapId);
@@ -37,8 +37,8 @@ export function BouquetBuilder({
 
   const count = stemCount(selection);
   const pricing = useMemo(
-    () => priceBouquet(selection, wrapId, extras),
-    [selection, wrapId, extras],
+    () => priceBouquet(selection, wrapId, extras, catalog),
+    [selection, wrapId, extras, catalog],
   );
 
   function add(id: string) {
@@ -172,7 +172,7 @@ export function BouquetBuilder({
                   <span className="text-xs text-ink-500">{group.hint}</span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {FLOWERS.filter((f) => f.group === group.id).map((flower) => {
+                  {catalog.flowers.filter((f) => f.group === group.id).map((flower) => {
                     const qty = selection[flower.id] ?? 0;
                     return (
                       <div
@@ -238,7 +238,7 @@ export function BouquetBuilder({
         <section>
           <SectionTitle step="3" title="Ambalajını seçin" />
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {WRAPS.map((w) => (
+            {catalog.wraps.map((w) => (
               <button
                 key={w.id}
                 onClick={() => setWrapId(w.id)}
@@ -268,7 +268,7 @@ export function BouquetBuilder({
         <section>
           <SectionTitle step="4" title="Yanına bir şey ekleyelim mi?" />
           <div className="grid sm:grid-cols-2 gap-3">
-            {EXTRAS.map((e) => (
+            {catalog.extras.map((e) => (
               <label
                 key={e.id}
                 className={cn(
@@ -321,7 +321,7 @@ export function BouquetBuilder({
           item={{
             name: "Kendi Tasarladığınız Buket",
             price: pricing.total,
-            detail: describeBouquet(selection, wrapId, extras),
+            detail: describeBouquet(selection, wrapId, extras, catalog),
             preview: (
               <BouquetPreview
                 selection={selection}

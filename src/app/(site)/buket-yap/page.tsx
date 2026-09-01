@@ -6,8 +6,10 @@ import { BouquetBuilder } from "@/components/bouquet/BouquetBuilder";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { SITE_NAME, SITE_URL, pageMetadata } from "@/lib/seo";
 import { MIN_STEMS } from "@/lib/bouquet";
+import { getBouquetCatalog } from "@/lib/bouquetCatalog";
 
-export const revalidate = 3600;
+// Admin panelden fiyat değişince sayfa en geç 5 dakikada tazelenir.
+export const revalidate = 300;
 
 export const metadata: Metadata = pageMetadata({
   title: "Kendi Buketini Yap — Online Buket Tasarla",
@@ -40,9 +42,12 @@ const STEPS = [
 ];
 
 export default async function CustomBouquetPage() {
-  const deliveryHours = await prisma.deliveryHour
-    .findMany({ where: { isActive: true }, orderBy: { id: "asc" } })
-    .catch(() => []);
+  const [deliveryHours, catalog] = await Promise.all([
+    prisma.deliveryHour
+      .findMany({ where: { isActive: true }, orderBy: { id: "asc" } })
+      .catch(() => []),
+    getBouquetCatalog(),
+  ]);
 
   return (
     <>
@@ -103,6 +108,7 @@ export default async function CustomBouquetPage() {
 
       <div className="mx-auto max-w-7xl px-6 py-12">
         <BouquetBuilder
+          catalog={catalog}
           deliveryHours={deliveryHours.map((h) => ({
             id: h.id,
             timeSlot: h.timeSlot,

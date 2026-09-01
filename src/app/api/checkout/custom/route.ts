@@ -11,6 +11,7 @@ import {
   priceBouquet,
   stemCount,
 } from "@/lib/bouquet";
+import { getBouquetCatalog } from "@/lib/bouquetCatalog";
 import {
   buildAutoSubmitForm,
   buildShopierForm,
@@ -68,9 +69,15 @@ export async function POST(req: Request) {
     );
   }
 
-  // Tutar her zaman sunucuda yeniden hesaplanır.
-  const pricing = priceBouquet(selection, data.wrapId, data.extras);
-  const composition = describeBouquet(selection, data.wrapId, data.extras);
+  // Tutar her zaman sunucuda, admin panelindeki güncel fiyatlarla hesaplanır.
+  const catalog = await getBouquetCatalog();
+  const pricing = priceBouquet(selection, data.wrapId, data.extras, catalog);
+  const composition = describeBouquet(
+    selection,
+    data.wrapId,
+    data.extras,
+    catalog,
+  );
 
   const merchantOid = `NTRLB${Date.now()}${Math.floor(Math.random() * 1000)
     .toString()

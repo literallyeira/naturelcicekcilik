@@ -7,6 +7,7 @@ import {
   Tags,
   Clock,
   Settings,
+  Flower2,
   LogOut,
 } from "lucide-react";
 import { requireAdmin } from "@/lib/auth";
@@ -18,6 +19,7 @@ const NAV = [
   { href: "/admin/orders", label: "Siparişler", icon: ShoppingBag },
   { href: "/admin/products", label: "Ürünler", icon: Package },
   { href: "/admin/categories", label: "Kategoriler", icon: Tags },
+  { href: "/admin/bouquet-prices", label: "Buket Fiyatları", icon: Flower2 },
   { href: "/admin/delivery-hours", label: "Teslimat Saatleri", icon: Clock },
   { href: "/admin/settings", label: "Ayarlar", icon: Settings },
 ];

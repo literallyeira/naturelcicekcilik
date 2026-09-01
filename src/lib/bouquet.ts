@@ -34,7 +34,7 @@ export const FLOWERS: Flower[] = [
     color: "#c2183a",
     shade: "#8f0f28",
     center: "#6d0b1d",
-    price: 95,
+    price: 240,
     group: "gul",
     note: "Aşkın klasik ifadesi",
   },
@@ -45,7 +45,7 @@ export const FLOWERS: Flower[] = [
     color: "#fdfcf8",
     shade: "#bcb097",
     center: "#d8d2c2",
-    price: 95,
+    price: 240,
     group: "gul",
     note: "Saflık ve zarafet",
   },
@@ -56,7 +56,7 @@ export const FLOWERS: Flower[] = [
     color: "#f2a2bd",
     shade: "#d97a9c",
     center: "#c26183",
-    price: 95,
+    price: 240,
     group: "gul",
     note: "Zarif ve romantik",
   },
@@ -67,7 +67,7 @@ export const FLOWERS: Flower[] = [
     color: "#c3a5e0",
     shade: "#a382c4",
     center: "#8d6bb0",
-    price: 105,
+    price: 265,
     group: "gul",
     note: "Özel ve iddialı",
   },
@@ -78,7 +78,7 @@ export const FLOWERS: Flower[] = [
     color: "#f6b79a",
     shade: "#dd9174",
     center: "#c87a5d",
-    price: 95,
+    price: 240,
     group: "gul",
     note: "Sıcak pastel ton",
   },
@@ -89,7 +89,7 @@ export const FLOWERS: Flower[] = [
     color: "#ffffff",
     shade: "#bdb49c",
     center: "#f2c14b",
-    price: 55,
+    price: 140,
     group: "mevsim",
     note: "Neşeli ve sade",
   },
@@ -100,7 +100,7 @@ export const FLOWERS: Flower[] = [
     color: "#e03b3b",
     shade: "#b62a2a",
     center: "#4a2318",
-    price: 70,
+    price: 175,
     group: "mevsim",
     note: "Canlı ve dikkat çekici",
   },
@@ -111,7 +111,7 @@ export const FLOWERS: Flower[] = [
     color: "#ef7fa8",
     shade: "#d15f89",
     center: "#4a2318",
-    price: 70,
+    price: 175,
     group: "mevsim",
     note: "Tatlı bir dokunuş",
   },
@@ -122,7 +122,7 @@ export const FLOWERS: Flower[] = [
     color: "#f0a0c0",
     shade: "#d17ea1",
     center: "#c06a8d",
-    price: 50,
+    price: 125,
     group: "mevsim",
     note: "Uzun ömürlü",
   },
@@ -133,7 +133,7 @@ export const FLOWERS: Flower[] = [
     color: "#fbf9f3",
     shade: "#beb59b",
     center: "#d5cfbe",
-    price: 50,
+    price: 125,
     group: "mevsim",
     note: "Zarif ve dayanıklı",
   },
@@ -144,7 +144,7 @@ export const FLOWERS: Flower[] = [
     color: "#fffdf7",
     shade: "#bfb69a",
     center: "#e0a33c",
-    price: 130,
+    price: 325,
     group: "mevsim",
     note: "Yoğun ve hoş kokulu",
   },
@@ -155,7 +155,7 @@ export const FLOWERS: Flower[] = [
     color: "#f5b921",
     shade: "#d99a10",
     center: "#5a3a1a",
-    price: 85,
+    price: 215,
     group: "mevsim",
     note: "Güneş gibi enerjik",
   },
@@ -166,7 +166,7 @@ export const FLOWERS: Flower[] = [
     color: "#cbb2e8",
     shade: "#ab8fcd",
     center: "#f0e6a8",
-    price: 90,
+    price: 225,
     group: "mevsim",
     note: "İpeksi ve zarif",
   },
@@ -177,7 +177,7 @@ export const FLOWERS: Flower[] = [
     color: "#fffdfa",
     shade: "#c2b89f",
     center: "#e0b64a",
-    price: 160,
+    price: 400,
     group: "mevsim",
     note: "Lüks ve gösterişli",
   },
@@ -188,7 +188,7 @@ export const FLOWERS: Flower[] = [
     color: "#9db89b",
     shade: "#7d9a7c",
     center: "#6d8a6c",
-    price: 35,
+    price: 90,
     group: "yesillik",
     note: "Ferah yeşil doku",
   },
@@ -199,7 +199,7 @@ export const FLOWERS: Flower[] = [
     color: "#ffffff",
     shade: "#c4bda9",
     center: "#f4f2ec",
-    price: 40,
+    price: 100,
     group: "yesillik",
     note: "Bulut gibi dolgunluk",
   },
@@ -210,7 +210,7 @@ export const FLOWERS: Flower[] = [
     color: "#4f7a4c",
     shade: "#3d6039",
     center: "#7ea87a",
-    price: 25,
+    price: 65,
     group: "yesillik",
     note: "Şık yeşil çerçeve",
   },
@@ -303,21 +303,93 @@ export function stemCount(selection: Selection): number {
   return Object.values(selection).reduce((sum, n) => sum + n, 0);
 }
 
+/** Yukarıdaki fiyatlar yalnızca varsayılan. Admin panelinden girilen
+ *  değerler `bouquet_prices` ayarında saklanır ve bunların üzerine biner. */
+export type BouquetCatalog = {
+  flowers: Flower[];
+  wraps: Wrap[];
+  extras: Extra[];
+};
+
+export type PriceOverrides = {
+  flowers?: Record<string, number>;
+  wraps?: Record<string, number>;
+  extras?: Record<string, number>;
+};
+
+export const DEFAULT_CATALOG: BouquetCatalog = {
+  flowers: FLOWERS,
+  wraps: WRAPS,
+  extras: EXTRAS,
+};
+
+export const BOUQUET_PRICES_KEY = "bouquet_prices";
+
+function isValidPrice(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0;
+}
+
+/** Ayar tablosundaki JSON metnini güvenli şekilde okur; bozuksa varsayılana döner. */
+export function parsePriceOverrides(raw: string | null): PriceOverrides {
+  if (!raw) return {};
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return {};
+  }
+  if (typeof parsed !== "object" || parsed === null) return {};
+
+  const source = parsed as Record<string, unknown>;
+  const overrides: PriceOverrides = {};
+  for (const group of ["flowers", "wraps", "extras"] as const) {
+    const raw = source[group];
+    if (typeof raw !== "object" || raw === null) continue;
+    const clean: Record<string, number> = {};
+    for (const [id, value] of Object.entries(raw as Record<string, unknown>)) {
+      if (isValidPrice(value)) clean[id] = value;
+    }
+    if (Object.keys(clean).length > 0) overrides[group] = clean;
+  }
+  return overrides;
+}
+
+export function catalogWithOverrides(
+  overrides: PriceOverrides,
+): BouquetCatalog {
+  const apply = <T extends { id: string; price: number }>(
+    items: T[],
+    map: Record<string, number> | undefined,
+  ): T[] =>
+    map
+      ? items.map((item) =>
+          isValidPrice(map[item.id]) ? { ...item, price: map[item.id] } : item,
+        )
+      : items;
+
+  return {
+    flowers: apply(FLOWERS, overrides.flowers),
+    wraps: apply(WRAPS, overrides.wraps),
+    extras: apply(EXTRAS, overrides.extras),
+  };
+}
+
 /** Fiyat her zaman burada hesaplanır — istemciden gelen tutara asla güvenilmez. */
 export function priceBouquet(
   selection: Selection,
   wrapId: string,
   extraIds: string[],
+  catalog: BouquetCatalog = DEFAULT_CATALOG,
 ) {
   let flowersTotal = 0;
   for (const [id, qty] of Object.entries(selection)) {
-    const flower = FLOWERS.find((f) => f.id === id);
+    const flower = catalog.flowers.find((f) => f.id === id);
     if (!flower || qty <= 0) continue;
     flowersTotal += flower.price * qty;
   }
 
-  const wrap = WRAPS.find((w) => w.id === wrapId) ?? WRAPS[1];
-  const extras = EXTRAS.filter((e) => extraIds.includes(e.id));
+  const wrap = catalog.wraps.find((w) => w.id === wrapId) ?? catalog.wraps[1];
+  const extras = catalog.extras.filter((e) => extraIds.includes(e.id));
   const extrasTotal = extras.reduce((sum, e) => sum + e.price, 0);
 
   return {
@@ -335,13 +407,19 @@ export function describeBouquet(
   selection: Selection,
   wrapId: string,
   extraIds: string[],
+  catalog: BouquetCatalog = DEFAULT_CATALOG,
 ): string {
   const lines: string[] = [];
-  for (const flower of FLOWERS) {
+  for (const flower of catalog.flowers) {
     const qty = selection[flower.id];
     if (qty && qty > 0) lines.push(`${qty} x ${flower.name}`);
   }
-  const { wrap, extras, total } = priceBouquet(selection, wrapId, extraIds);
+  const { wrap, extras, total } = priceBouquet(
+    selection,
+    wrapId,
+    extraIds,
+    catalog,
+  );
   lines.push(`Ambalaj: ${wrap.name}`);
   if (extras.length > 0) {
     lines.push(`Ekstralar: ${extras.map((e) => e.name).join(", ")}`);
