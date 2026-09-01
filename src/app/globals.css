@@ -1,29 +1,74 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-50: #f5faf3;
-  --color-brand-100: #e7f3e0;
-  --color-brand-200: #cce6bd;
-  --color-brand-300: #a8d18d;
-  --color-brand-400: #82bd5e;
-  --color-brand-500: #6cb33f;
-  --color-brand-600: #589a30;
-  --color-brand-700: #44762a;
-  --color-brand-800: #355d24;
-  --color-brand-900: #2b4d20;
+  /* Derin botanik yeşili — çiçekçi kimliğinin ana rengi */
+  --color-brand-50: #f2f7f3;
+  --color-brand-100: #dfece3;
+  --color-brand-200: #c1d9c9;
+  --color-brand-300: #96bfa3;
+  --color-brand-400: #669e78;
+  --color-brand-500: #3f7d55;
+  --color-brand-600: #326546;
+  --color-brand-700: #2a5039;
+  --color-brand-800: #234030;
+  --color-brand-900: #1c3428;
 
-  --color-cream-50: #fbf6f3;
-  --color-cream-100: #f7ecea;
-  --color-cream-200: #f1d9d6;
+  /* Şampanya altını — premium vurgular */
+  --color-gold-100: #f7efe1;
+  --color-gold-200: #ecdcc1;
+  --color-gold-300: #dcc199;
+  --color-gold-400: #c9a473;
+  --color-gold-500: #b08d57;
+  --color-gold-600: #94743f;
 
-  --color-ink-900: #1a1a1a;
-  --color-ink-700: #404040;
-  --color-ink-500: #6b6b6b;
-  --color-ink-300: #c4c4c4;
-  --color-ink-100: #ededed;
+  /* Sıcak krem zeminler */
+  --color-cream-50: #fdfaf6;
+  --color-cream-100: #f8f1e8;
+  --color-cream-200: #efe2d3;
+  --color-cream-300: #e3d0bc;
+
+  /* Nötr mürekkep skalası */
+  --color-ink-50: #f8f8f7;
+  --color-ink-100: #ececea;
+  --color-ink-200: #dad9d6;
+  --color-ink-300: #bab9b5;
+  --color-ink-400: #918f8a;
+  --color-ink-500: #6f6d68;
+  --color-ink-600: #56544f;
+  --color-ink-700: #3d3b37;
+  --color-ink-800: #2a2926;
+  --color-ink-900: #171614;
 
   --font-sans: var(--font-sans), system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", sans-serif;
+  --font-display: var(--font-logo), "Iowan Old Style", Georgia, "Times New Roman",
+    serif;
+
+  --shadow-soft: 0 1px 2px rgb(23 22 20 / 0.04), 0 8px 24px -12px rgb(23 22 20 / 0.12);
+  --shadow-lift: 0 2px 4px rgb(23 22 20 / 0.05), 0 18px 40px -16px rgb(23 22 20 / 0.22);
+
+  --animate-fade-in: fade-in 0.25s ease-out both;
+  --animate-rise: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 }
 
 :root {
@@ -34,6 +79,7 @@
 html {
   background: var(--background);
   color: var(--foreground);
+  scroll-behavior: smooth;
 }
 
 body {
@@ -41,6 +87,22 @@ body {
   font-feature-settings: "ss01", "ss02";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.012em;
+}
+
+::selection {
+  background: var(--color-brand-100);
+  color: var(--color-brand-900);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar {
@@ -51,8 +113,20 @@ body {
   background: var(--color-ink-300);
   border-radius: 999px;
 }
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink-400);
+}
 ::-webkit-scrollbar-track {
   background: transparent;
+}
+
+/* Yatay kaydırma şeritlerinde çubuğu gizle */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 .embla {
@@ -70,9 +144,10 @@ body {
   margin-top: 1em;
 }
 .content h2 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-top: 1.5rem;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 500;
+  margin-top: 1.75rem;
   margin-bottom: 0.5rem;
 }
 .content h3 {

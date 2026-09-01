@@ -19,13 +19,19 @@ export function CheckoutLauncher({ product, deliveryHours }: Props) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="mt-8 w-full h-14 rounded-full bg-brand-500 text-white font-semibold uppercase tracking-wider hover:bg-brand-600 transition-colors"
+        className="mt-8 w-full h-14 rounded-full bg-brand-500 text-white font-semibold uppercase tracking-[0.12em] text-sm hover:bg-brand-600 shadow-soft hover:shadow-lift transition-all"
       >
         Sipariş Ver
       </button>
       {open ? (
         <CheckoutDialog
-          product={product}
+          item={{
+            name: product.name,
+            price: product.price,
+            image: product.image,
+          }}
+          endpoint="/api/checkout"
+          payload={{ productId: product.id }}
           deliveryHours={deliveryHours}
           onClose={() => setOpen(false)}
         />

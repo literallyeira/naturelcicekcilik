@@ -37,7 +37,13 @@ export default async function OrdersPage() {
             {orders.map((o) => (
               <tr key={o.id} className="border-t border-ink-100">
                 <td className="p-3 font-mono text-xs">{o.merchantOid}</td>
-                <td className="p-3">{o.product?.name ?? "—"}</td>
+                <td className="p-3">
+                  {o.product?.name ?? (
+                    <span className="text-brand-700 font-semibold">
+                      Özel Buket
+                    </span>
+                  )}
+                </td>
                 <td className="p-3">
                   {o.recipientName} {o.recipientSurname}
                 </td>

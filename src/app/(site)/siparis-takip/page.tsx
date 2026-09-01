@@ -1,12 +1,16 @@
 import { prisma } from "@/lib/db";
 import { formatDate, formatPrice } from "@/lib/format";
 import { Search } from "lucide-react";
+import { pageMetadata } from "@/lib/seo";
 
 type SP = Promise<{ oid?: string }>;
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: "Sipariş Takibi",
-};
+  description:
+    "Sipariş numaranızla Naturel Çiçekçilik siparişinizin durumunu anında sorgulayın.",
+  path: "/siparis-takip",
+});
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   hazırlanıyor: { label: "Hazırlanıyor", color: "bg-amber-100 text-amber-800" },
@@ -34,7 +38,7 @@ export default async function OrderTrackPage({
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-14">
-      <h1 className="text-3xl font-black tracking-tight text-ink-900 mb-2">
+      <h1 className="font-display text-4xl text-ink-900 mb-2">
         Sipariş Takibi
       </h1>
       <p className="text-ink-500 mb-8">
@@ -81,7 +85,10 @@ export default async function OrderTrackPage({
           </header>
 
           <div className="grid sm:grid-cols-2 gap-4 text-sm">
-            <Info label="Ürün" value={order.product?.name ?? "—"} />
+            <Info
+              label="Ürün"
+              value={order.product?.name ?? "Kendi tasarladığınız buket"}
+            />
             <Info
               label="Tutar"
               value={formatPrice(order.totalAmount ?? 0)}

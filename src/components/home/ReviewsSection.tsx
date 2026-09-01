@@ -84,14 +84,21 @@ export function ReviewsSection() {
   function stopDrag() { setIsDragging(false); }
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-cream-50 border-y border-ink-100">
       <div className="mx-auto max-w-7xl px-6">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-ink-900">Müşteri Yorumları</h2>
-            <div className="flex items-center gap-2 mt-1">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-600 mb-3">
+              Müşterilerimiz
+            </p>
+            <h2 className="font-display text-3xl md:text-4xl text-ink-900">
+              İzmir bize güveniyor
+            </h2>
+            <div className="flex items-center gap-2 mt-3">
               <Stars count={5} />
-              <span className="text-sm text-ink-500 font-medium">4.9 · Google</span>
+              <span className="text-sm text-ink-500 font-medium">
+                Müşterilerimizin yorumlarından
+              </span>
             </div>
           </div>
           <a
@@ -106,8 +113,7 @@ export function ReviewsSection() {
 
         <div
           ref={scrollRef}
-          className="flex gap-4 overflow-x-auto pb-4 cursor-grab active:cursor-grabbing select-none"
-          style={{ scrollbarWidth: "none" }}
+          className="flex gap-4 overflow-x-auto pb-4 cursor-grab active:cursor-grabbing select-none no-scrollbar"
           onMouseDown={onMouseDown}
           onMouseMove={onMouseMove}
           onMouseUp={stopDrag}
@@ -116,7 +122,7 @@ export function ReviewsSection() {
           {REVIEWS.map((r, i) => (
             <div
               key={i}
-              className="shrink-0 w-72 rounded-2xl border border-ink-100 p-5 space-y-3"
+              className="shrink-0 w-72 rounded-2xl border border-ink-100 bg-white p-5 space-y-3 shadow-soft"
             >
               <div className="flex items-center gap-3">
                 <div className="size-10 rounded-full bg-brand-100 text-brand-700 font-bold text-sm grid place-items-center shrink-0">

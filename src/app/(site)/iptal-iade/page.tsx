@@ -1,18 +1,29 @@
-export const metadata = { title: "İptal / İade Politikası" };
+import { pageMetadata } from "@/lib/seo";
+import { PHONE_HREF, PHONE_INTL_DISPLAY } from "@/lib/site";
+
+export const metadata = pageMetadata({
+  title: "İptal / İade Politikası",
+  description:
+    "Naturel Çiçekçilik sipariş iptali, iade ve ücretsiz değişim koşulları.",
+  path: "/iptal-iade",
+});
 
 export default function CancelReturnPage() {
   return (
     <div className="mx-auto max-w-3xl px-6 py-14">
-      <h1 className="text-3xl font-black tracking-tight text-ink-900 mb-8">
+      <h1 className="font-display text-4xl text-ink-900 mb-8">
         İptal / İade Politikası
       </h1>
-      <div className="content text-ink-700 leading-relaxed space-y-4">
+      <div className="content text-ink-600 leading-relaxed space-y-4">
         <h2>Sipariş İptali</h2>
         <p>
           Sipariş verdikten sonra çiçek hazırlık aşamasına alınmamışsa
           (genelde sipariş onayından sonraki ilk 1 saat içinde) iptal talebi
-          kabul edilebilir. Lütfen iptal talepleriniz için en kısa sürede
-          0555 555 55 55 numaralı telefondan bize ulaşın.
+          kabul edilebilir. Lütfen iptal talepleriniz için en kısa sürede{" "}
+          <a href={PHONE_HREF} className="text-brand-600 underline underline-offset-4">
+            {PHONE_INTL_DISPLAY}
+          </a>{" "}
+          numaralı telefondan bize ulaşın.
         </p>
         <h2>İade</h2>
         <p>

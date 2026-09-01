@@ -49,7 +49,12 @@ export default async function OrderDetail({ params }: { params: Params }) {
               />
             </div>
           ) : null}
-          <Line label="Ad" value={order.product?.name ?? "-"} />
+          <Line
+            label="Ad"
+            value={
+              order.product?.name ?? "Özel Buket (müşteri tasarımı — nota bakın)"
+            }
+          />
           <Line label="Tutar" value={formatPrice(order.totalAmount ?? 0)} />
           <Line
             label="Sipariş Tarihi"
@@ -87,7 +92,7 @@ export default async function OrderDetail({ params }: { params: Params }) {
           />
         </Card>
         {order.note ? (
-          <Card title="Kart Notu">
+          <Card title={order.product ? "Kart Notu" : "Buket İçeriği & Not"}>
             <p className="text-ink-700 whitespace-pre-line">{order.note}</p>
           </Card>
         ) : null}
@@ -140,7 +145,9 @@ function PrintableDeliverySlip({ order }: { order: OrderWithProduct }) {
 
         <div>
           <p className="text-xs uppercase text-ink-500">Ürün</p>
-          <h3 className="text-xl font-black">{order.product?.name ?? "-"}</h3>
+          <h3 className="text-xl font-black">
+            {order.product?.name ?? "Özel Buket (müşteri tasarımı)"}
+          </h3>
           <p className="mt-2 text-sm">
             Tutar: <strong>{formatPrice(order.totalAmount ?? 0)}</strong>
           </p>
@@ -174,7 +181,9 @@ function PrintableDeliverySlip({ order }: { order: OrderWithProduct }) {
 
       {order.note ? (
         <div className="mt-5 border border-ink-200 rounded-lg p-4">
-          <p className="text-xs uppercase text-ink-500 mb-2">Kart Notu</p>
+          <p className="text-xs uppercase text-ink-500 mb-2">
+            {order.product ? "Kart Notu" : "Buket İçeriği & Kart Notu"}
+          </p>
           <p className="whitespace-pre-line text-lg leading-relaxed">
             {order.note}
           </p>

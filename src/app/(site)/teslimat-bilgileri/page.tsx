@@ -1,16 +1,31 @@
-export const metadata = { title: "Teslimat Bilgileri" };
+import Link from "next/link";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Teslimat Bilgileri — İzmir Aynı Gün Çiçek Teslimatı",
+  description:
+    "İzmir'in tüm ilçelerine aynı gün çiçek teslimatı. Teslimat saatleri, ücretsiz kargo koşulları ve teslimat süreci hakkında bilmeniz gerekenler.",
+  path: "/teslimat-bilgileri",
+});
 
 export default function DeliveryInfoPage() {
   return (
     <div className="mx-auto max-w-3xl px-6 py-14">
-      <h1 className="text-3xl font-black tracking-tight text-ink-900 mb-8">
+      <h1 className="font-display text-4xl text-ink-900 mb-8">
         Teslimat Bilgileri
       </h1>
-      <div className="content text-ink-700 leading-relaxed space-y-4">
+      <div className="content text-ink-600 leading-relaxed space-y-4">
         <h2>Teslimat Bölgeleri</h2>
         <p>
           İzmir il merkezi ve tüm ilçelerine aynı gün teslimat hizmeti
-          sunulmaktadır. Şehir dışı siparişler için kargo seçeneği mevcuttur.
+          sunulmaktadır. Şehir dışı siparişler için kargo seçeneği mevcuttur.{" "}
+          <Link
+            href="/izmir-cicekci"
+            className="text-brand-600 underline underline-offset-4"
+          >
+            İlçe bazlı teslimat sürelerini
+          </Link>{" "}
+          inceleyebilirsiniz.
         </p>
         <h2>Teslimat Saatleri</h2>
         <ul>
