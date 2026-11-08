@@ -105,7 +105,7 @@ export default function ContactPage() {
                 Teslimat bölgelerimiz
               </h3>
               <p className="text-sm text-ink-600 leading-relaxed">
-                {SERVICE_AREAS.join(" · ")} ve tüm İzmir ilçeleri.{" "}
+                Şu an yalnızca {SERVICE_AREAS.join(", ")} ilçelerine teslimat yapıyoruz.{" "}
                 <Link
                   href="/izmir-cicekci"
                   className="text-brand-600 underline underline-offset-4"

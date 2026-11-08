@@ -37,7 +37,7 @@ const FAQS = [
   },
   {
     q: "İzmir'in hangi ilçelerine teslimat yapıyorsunuz?",
-    a: "Bayraklı, Karşıyaka, Bornova, Konak, Çiğli, Buca, Gaziemir, Balçova, Narlıdere, Güzelbahçe başta olmak üzere İzmir'in tüm ilçelerine teslimat yapıyoruz.",
+    a: "Şu an yalnızca Bayraklı, Karşıyaka ve Bornova ilçelerine teslimat yapıyoruz.",
   },
   {
     q: "İade ve iptal politikası nedir?",

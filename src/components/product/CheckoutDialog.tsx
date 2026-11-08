@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { X, Check, ChevronLeft } from "lucide-react";
+import { X, Check, ChevronLeft, Copy, CreditCard, Landmark } from "lucide-react";
 import { formatPrice } from "@/lib/format";
 import { cn } from "@/lib/cn";
-import { whatsappLink } from "@/lib/site";
+import { DELIVERY_DISTRICTS } from "@/lib/districts";
+import { BANK, whatsappLink } from "@/lib/site";
+
+type PaymentMethod = "card" | "havale";
 
 type DeliveryHour = { id: number; timeSlot: string };
 
@@ -22,6 +25,8 @@ type Props = {
   endpoint: string;
   payload: Record<string, unknown>;
   deliveryHours: DeliveryHour[];
+  /** Shopier ayarlıysa true — kartla ödeme seçeneği gösterilir. */
+  cardEnabled?: boolean;
   onClose: () => void;
 };
 
@@ -42,6 +47,7 @@ type FormData = {
   note: string;
   isAnonymous: boolean;
   acceptTerms: boolean;
+  paymentMethod: PaymentMethod;
 };
 
 const EMPTY: FormData = {
@@ -61,6 +67,7 @@ const EMPTY: FormData = {
   note: "",
   isAnonymous: false,
   acceptTerms: false,
+  paymentMethod: "havale",
 };
 
 const STEPS = ["Gönderici", "Alıcı", "Teslimat", "Özet"];
@@ -70,10 +77,15 @@ export function CheckoutDialog({
   endpoint,
   payload,
   deliveryHours,
+  cardEnabled = false,
   onClose,
 }: Props) {
   const [step, setStep] = useState(0);
-  const [data, setData] = useState<FormData>(EMPTY);
+  const [data, setData] = useState<FormData>({
+    ...EMPTY,
+    paymentMethod: cardEnabled ? "card" : "havale",
+  });
+  const [copied, setCopied] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<{ orderId: string; total: number } | null>(null);
@@ -178,13 +190,35 @@ export function CheckoutDialog({
             </p>
             <div className="space-y-1 text-sm text-ink-900">
               <p>
-                <span className="text-ink-500">Ad Soyad:</span> Muratcan Kıyanç
+                <span className="text-ink-500">Alıcı:</span> {BANK.holder}
+              </p>
+              <p>
+                <span className="text-ink-500">Banka:</span> {BANK.bankName}
               </p>
               <p>
                 <span className="text-ink-500">IBAN:</span>
               </p>
-              <p className="font-mono font-semibold tracking-wider text-base">
-                TR14 0004 6003 5088 8000 2527 27
+              <div className="flex items-center gap-2">
+                <p className="font-mono font-semibold tracking-wider text-base">
+                  {BANK.iban}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard
+                      ?.writeText(BANK.iban.replace(/\s/g, ""))
+                      .then(() => setCopied(true))
+                      .catch(() => {});
+                  }}
+                  className="shrink-0 inline-flex items-center gap-1 h-8 px-2.5 rounded-full border border-ink-100 text-xs text-ink-700 hover:border-ink-300"
+                >
+                  {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+                  {copied ? "Kopyalandı" : "Kopyala"}
+                </button>
+              </div>
+              <p>
+                <span className="text-ink-500">Açıklama:</span>{" "}
+                <span className="font-mono">{done.orderId}</span>
               </p>
               <p>
                 <span className="text-ink-500">Tutar:</span>{" "}
@@ -291,7 +325,12 @@ export function CheckoutDialog({
             />
           ) : null}
           {step === 3 ? (
-            <StepSummary data={data} item={item} update={update} />
+            <StepSummary
+              data={data}
+              item={item}
+              update={update}
+              cardEnabled={cardEnabled}
+            />
           ) : null}
         </div>
 
@@ -320,7 +359,11 @@ export function CheckoutDialog({
               onClick={submit}
               className="h-11 px-7 rounded-full bg-brand-500 text-white font-semibold disabled:bg-ink-300 disabled:cursor-not-allowed hover:bg-brand-600 transition-colors"
             >
-              {submitting ? "İşleniyor..." : "Siparişi Tamamla"}
+              {submitting
+                ? "İşleniyor..."
+                : data.paymentMethod === "card"
+                  ? "Kartla Öde"
+                  : "Siparişi Tamamla"}
             </button>
           )}
         </footer>
@@ -447,20 +490,33 @@ function StepRecipient({ data, update }: StepProps) {
           onChange={(e) => update("recipientPhone", e.target.value)}
         />
       </Field>
-      <Field label="İl *">
+      <Field label="İl">
         <input
-          className={inputCls}
+          className={cn(inputCls, "bg-cream-50 text-ink-500")}
           value={data.recipientCity}
-          onChange={(e) => update("recipientCity", e.target.value)}
+          readOnly
         />
       </Field>
       <Field label="İlçe *">
-        <input
+        <select
           className={inputCls}
           value={data.district}
           onChange={(e) => update("district", e.target.value)}
-        />
+        >
+          <option value="" disabled>
+            İlçe seçin
+          </option>
+          {DELIVERY_DISTRICTS.map((d) => (
+            <option key={d} value={d}>
+              {d}
+            </option>
+          ))}
+        </select>
       </Field>
+      <p className="sm:col-span-2 -mt-2 text-xs text-ink-500">
+        Şu an yalnızca {DELIVERY_DISTRICTS.join(", ")} ilçelerine teslimat
+        yapıyoruz.
+      </p>
       <div className="sm:col-span-2">
         <Field label="Teslimat Adresi *">
           <textarea
@@ -538,7 +594,8 @@ function StepSummary({
   data,
   item,
   update,
-}: StepProps & { item: CheckoutItem }) {
+  cardEnabled,
+}: StepProps & { item: CheckoutItem; cardEnabled: boolean }) {
   return (
     <div className="space-y-5">
       <div className="flex gap-4 border border-ink-100 rounded-2xl p-4">
@@ -594,6 +651,30 @@ function StepSummary({
         ]}
       />
 
+      <div>
+        <p className="text-xs uppercase tracking-wider text-ink-500 font-semibold mb-2">
+          Ödeme Yöntemi
+        </p>
+        <div className="grid sm:grid-cols-2 gap-2">
+          {cardEnabled ? (
+            <PaymentOption
+              selected={data.paymentMethod === "card"}
+              onSelect={() => update("paymentMethod", "card")}
+              icon={<CreditCard className="size-5" />}
+              title="Kredi / Banka Kartı"
+              hint="Güvenli ödeme sayfasına yönlendirilirsiniz"
+            />
+          ) : null}
+          <PaymentOption
+            selected={data.paymentMethod === "havale"}
+            onSelect={() => update("paymentMethod", "havale")}
+            icon={<Landmark className="size-5" />}
+            title="Havale / EFT"
+            hint="IBAN bilgisi sipariş sonrası gösterilir"
+          />
+        </div>
+      </div>
+
       <label className="flex items-start gap-2 text-sm text-ink-700 cursor-pointer pt-2 border-t border-ink-100">
         <input
           type="checkbox"
@@ -621,6 +702,45 @@ function StepSummary({
         </span>
       </label>
     </div>
+  );
+}
+
+function PaymentOption({
+  selected,
+  onSelect,
+  icon,
+  title,
+  hint,
+}: {
+  selected: boolean;
+  onSelect: () => void;
+  icon: React.ReactNode;
+  title: string;
+  hint: string;
+}) {
+  return (
+    <button
+      type="button"
+      role="radio"
+      aria-checked={selected}
+      onClick={onSelect}
+      className={cn(
+        "flex items-start gap-3 rounded-xl border p-3.5 text-left transition-colors",
+        selected
+          ? "border-brand-500 bg-brand-50"
+          : "border-ink-100 hover:border-ink-300",
+      )}
+    >
+      <span className={selected ? "text-brand-600" : "text-ink-500"}>
+        {icon}
+      </span>
+      <span>
+        <span className="block text-sm font-semibold text-ink-900">
+          {title}
+        </span>
+        <span className="block text-xs text-ink-500 mt-0.5">{hint}</span>
+      </span>
+    </button>
   );
 }
 

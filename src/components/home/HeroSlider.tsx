@@ -25,7 +25,7 @@ const SLIDES: Slide[] = [
     title: "Bugün sipariş verin,",
     accent: "bugün kapıda olsun",
     subtitle:
-      "Bayraklı'daki atölyemizde her sabah tazelenen çiçeklerle hazırlanan buketler, İzmir'in her ilçesine aynı gün teslim.",
+      "Bayraklı'daki atölyemizde her sabah tazelenen çiçeklerle hazırlanan buketler, Karşıyaka, Bayraklı ve Bornova'ya aynı gün teslim.",
     ctaText: "Buketleri Keşfet",
     ctaHref: "/kategori/buketler",
     image: "/products/kelebek-buketi-1763418880.png",

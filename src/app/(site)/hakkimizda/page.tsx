@@ -6,7 +6,7 @@ import { ADDRESS, PHONE_HREF, PHONE_INTL_DISPLAY } from "@/lib/site";
 export const metadata = pageMetadata({
   title: "Hakkımızda — Bayraklı'nın Çiçekçisi",
   description:
-    "Naturel Çiçekçilik, Bayraklı'daki atölyesinden İzmir'in tüm ilçelerine her sabah tazelenen çiçeklerle hazırlanan buketler gönderen bir aile işletmesidir.",
+    "Naturel Çiçekçilik, Bayraklı'daki atölyesinden Karşıyaka, Bayraklı ve Bornova'ya her sabah tazelenen çiçeklerle hazırlanan buketler gönderen bir aile işletmesidir.",
   path: "/hakkimizda",
 });
 

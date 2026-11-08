@@ -2,28 +2,14 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import {
-  buildAutoSubmitForm,
-  buildShopierForm,
-  isShopierConfigured,
-} from "@/lib/shopier";
+  RECIPIENT_CITY,
+  orderFieldsSchema,
+  paymentResponse,
+  validationError,
+} from "@/lib/checkout";
 
-const checkoutSchema = z.object({
+const checkoutSchema = orderFieldsSchema.extend({
   productId: z.number().int().positive(),
-  senderName: z.string().min(1),
-  senderSurname: z.string().min(1),
-  senderPhone: z.string().min(7),
-  senderEmail: z.string().email(),
-  senderAddress: z.string().optional(),
-  recipientName: z.string().min(1),
-  recipientSurname: z.string().min(1),
-  recipientPhone: z.string().min(7),
-  recipientAddress: z.string().min(1),
-  recipientCity: z.string().min(1),
-  district: z.string().min(1),
-  deliveryDay: z.string().min(1),
-  deliveryHour: z.string().min(1),
-  note: z.string().optional(),
-  isAnonymous: z.boolean().optional(),
 });
 
 export async function POST(req: Request) {
@@ -35,12 +21,7 @@ export async function POST(req: Request) {
   }
 
   const parsed = checkoutSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: "Form verisi eksik", details: parsed.error.format() },
-      { status: 400 },
-    );
-  }
+  if (!parsed.success) return validationError(parsed.error);
   const data = parsed.data;
 
   const product = await prisma.product.findUnique({
@@ -72,7 +53,7 @@ export async function POST(req: Request) {
       recipientSurname: data.recipientSurname,
       recipientPhone: data.recipientPhone,
       recipientAddress: data.recipientAddress,
-      recipientCity: data.recipientCity,
+      recipientCity: RECIPIENT_CITY,
       district: data.district,
       deliveryDay: new Date(data.deliveryDay),
       deliveryHour: data.deliveryHour,
@@ -82,29 +63,9 @@ export async function POST(req: Request) {
     },
   });
 
-  if (!isShopierConfigured()) {
-    return NextResponse.json({
-      orderId: merchantOid,
-      bankTransfer: true,
-      totalAmount,
-    });
-  }
-
-  const { url, fields } = buildShopierForm({
-    orderId: merchantOid,
-    amount: Number(product.price),
-    currency: "TRY",
-    buyer: {
-      buyerName: data.senderName,
-      buyerSurname: data.senderSurname,
-      buyerEmail: data.senderEmail,
-      buyerPhone: data.senderPhone,
-      buyerAddress: data.senderAddress ?? data.recipientAddress,
-      buyerCity: data.recipientCity,
-    },
-  });
-
-  const html = buildAutoSubmitForm(url, fields);
-
-  return NextResponse.json({ orderId: merchantOid, paymentForm: html });
+  return paymentResponse(
+    { ...order, merchantOid, totalAmount, product: { name: product.name } },
+    data,
+    Number(product.price),
+  );
 }

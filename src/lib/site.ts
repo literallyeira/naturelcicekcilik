@@ -18,18 +18,14 @@ export const ADDRESS = {
 
 export const GEO = { lat: 38.4604, lng: 27.1752 };
 
-export const SERVICE_AREAS = [
-  "Bayraklı",
-  "Karşıyaka",
-  "Bornova",
-  "Konak",
-  "Çiğli",
-  "Buca",
-  "Gaziemir",
-  "Balçova",
-  "Narlıdere",
-  "Alsancak",
-];
+/** Havale / EFT ile ödeme bilgileri — sipariş sonrası müşteriye gösterilir. */
+export const BANK = {
+  holder: "Muratcan Kıyanç",
+  bankName: "Garanti BBVA",
+  iban: "TR59 0006 2001 1000 0006 6282 80",
+};
+
+export const SERVICE_AREAS = ["Karşıyaka", "Bayraklı", "Bornova"];
 
 export const SOCIAL = {
   instagram: "https://www.instagram.com/naturelcicekcilik",

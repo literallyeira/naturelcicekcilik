@@ -13,37 +13,23 @@ import {
 } from "@/lib/bouquet";
 import { getBouquetCatalog } from "@/lib/bouquetCatalog";
 import {
-  buildAutoSubmitForm,
-  buildShopierForm,
-  isShopierConfigured,
-} from "@/lib/shopier";
+  RECIPIENT_CITY,
+  orderFieldsSchema,
+  paymentResponse,
+  validationError,
+} from "@/lib/checkout";
 
 const FLOWER_IDS = FLOWERS.map((f) => f.id);
 const WRAP_IDS = WRAPS.map((w) => w.id);
 const EXTRA_IDS = EXTRAS.map((e) => e.id);
 
-const customSchema = z.object({
+const customSchema = orderFieldsSchema.extend({
   selection: z.record(
     z.enum(FLOWER_IDS as [string, ...string[]]),
     z.number().int().min(1).max(MAX_STEMS),
   ),
   wrapId: z.enum(WRAP_IDS as [string, ...string[]]),
   extras: z.array(z.enum(EXTRA_IDS as [string, ...string[]])).default([]),
-  senderName: z.string().min(1),
-  senderSurname: z.string().min(1),
-  senderPhone: z.string().min(7),
-  senderEmail: z.string().email(),
-  senderAddress: z.string().optional(),
-  recipientName: z.string().min(1),
-  recipientSurname: z.string().min(1),
-  recipientPhone: z.string().min(7),
-  recipientAddress: z.string().min(1),
-  recipientCity: z.string().min(1),
-  district: z.string().min(1),
-  deliveryDay: z.string().min(1),
-  deliveryHour: z.string().min(1),
-  note: z.string().optional(),
-  isAnonymous: z.boolean().optional(),
 });
 
 export async function POST(req: Request) {
@@ -55,9 +41,7 @@ export async function POST(req: Request) {
   }
 
   const parsed = customSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json({ error: "Form verisi eksik" }, { status: 400 });
-  }
+  if (!parsed.success) return validationError(parsed.error);
   const data = parsed.data;
   const selection = data.selection as Record<string, number>;
 
@@ -91,7 +75,7 @@ export async function POST(req: Request) {
     .filter(Boolean)
     .join("\n");
 
-  await prisma.order.create({
+  const order = await prisma.order.create({
     data: {
       productId: null,
       merchantOid,
@@ -105,7 +89,7 @@ export async function POST(req: Request) {
       recipientSurname: data.recipientSurname,
       recipientPhone: data.recipientPhone,
       recipientAddress: data.recipientAddress,
-      recipientCity: data.recipientCity,
+      recipientCity: RECIPIENT_CITY,
       district: data.district,
       deliveryDay: new Date(data.deliveryDay),
       deliveryHour: data.deliveryHour,
@@ -115,30 +99,8 @@ export async function POST(req: Request) {
     },
   });
 
-  if (!isShopierConfigured()) {
-    return NextResponse.json({
-      orderId: merchantOid,
-      bankTransfer: true,
-      totalAmount: pricing.total,
-    });
-  }
-
-  const { url, fields } = buildShopierForm({
-    orderId: merchantOid,
-    amount: pricing.total,
-    currency: "TRY",
-    buyer: {
-      buyerName: data.senderName,
-      buyerSurname: data.senderSurname,
-      buyerEmail: data.senderEmail,
-      buyerPhone: data.senderPhone,
-      buyerAddress: data.senderAddress ?? data.recipientAddress,
-      buyerCity: data.recipientCity,
-    },
-  });
-
-  return NextResponse.json({
-    orderId: merchantOid,
-    paymentForm: buildAutoSubmitForm(url, fields),
-  });
+  return paymentResponse(
+    { ...order, merchantOid, totalAmount: pricing.total, product: null },
+    data,
+  );
 }

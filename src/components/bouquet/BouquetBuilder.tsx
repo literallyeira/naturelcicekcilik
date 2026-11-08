@@ -25,9 +25,11 @@ const GROUPS: { id: "gul" | "mevsim" | "yesillik"; label: string; hint: string }
 
 export function BouquetBuilder({
   deliveryHours,
+  cardEnabled,
   catalog,
 }: {
   deliveryHours: { id: number; timeSlot: string }[];
+  cardEnabled?: boolean;
   catalog: BouquetCatalog;
 }) {
   const [selection, setSelection] = useState<Selection>(PRESETS[0].selection);
@@ -333,6 +335,7 @@ export function BouquetBuilder({
           endpoint="/api/checkout/custom"
           payload={{ selection, wrapId, extras }}
           deliveryHours={deliveryHours}
+          cardEnabled={cardEnabled}
           onClose={() => setCheckoutOpen(false)}
         />
       ) : null}

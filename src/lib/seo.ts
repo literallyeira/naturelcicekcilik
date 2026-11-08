@@ -12,7 +12,7 @@ export const SITE_NAME = "Naturel Çiçekçilik";
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://izmirnaturelcicek.com";
 export const SITE_DESCRIPTION =
-  "İzmir çiçekçi — aynı gün teslimat. Bayraklı, Karşıyaka, Bornova ve tüm İzmir'e taze gül buketi, aranjman, saksı çiçeği ve orkide gönderin. Kendi buketinizi tasarlayın, fiyatı anında görün.";
+  "İzmir çiçekçi — aynı gün teslimat. Bayraklı, Karşıyaka ve Bornova'ya taze gül buketi, aranjman, saksı çiçeği ve orkide gönderin. Kendi buketinizi tasarlayın, fiyatı anında görün.";
 
 export const OG_IMAGE = "/banner.jpg";
 

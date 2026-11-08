@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { prisma } from "@/lib/db";
+import { notifyNewOrder } from "@/lib/notify";
 import { verifyShopierCallback, type ShopierCallback } from "@/lib/shopier";
 
 async function read(req: Request): Promise<ShopierCallback | null> {
@@ -18,21 +19,42 @@ async function read(req: Request): Promise<ShopierCallback | null> {
   }
 }
 
+/**
+ * Shopier ödeme sonrası müşterinin tarayıcısını bu adrese POST eder
+ * (Shopier paneli → Geri dönüş URL). İmzayı doğrular, siparişi "paid"
+ * yapar, dükkana bildirim gönderir ve müşteriyi sonuç sayfasına yönlendirir.
+ */
 export async function POST(req: Request) {
   const data = await read(req);
-  if (!data) return new NextResponse("bad request", { status: 400 });
+  const go = (path: string) =>
+    NextResponse.redirect(new URL(path, req.url), 303);
 
-  if (!verifyShopierCallback(data)) {
-    return new NextResponse("invalid signature", { status: 401 });
+  if (!data || !verifyShopierCallback(data)) {
+    return go("/odeme/basarisiz");
   }
 
-  if (data.status === "success") {
-    await prisma.order.update({
-      where: { merchantOid: data.platform_order_id },
-      data: { paymentStatus: "paid" },
+  const oid = data.platform_order_id;
+  const oidQuery = `oid=${encodeURIComponent(oid)}`;
+
+  if (data.status.toLowerCase() !== "success") {
+    return go(`/odeme/basarisiz?${oidQuery}`);
+  }
+
+  // Yalnızca bekleyen siparişi güncelle — sayfa yenilenirse tekrar bildirim gitmez.
+  const { count } = await prisma.order.updateMany({
+    where: { merchantOid: oid, paymentStatus: "pending" },
+    data: { paymentStatus: "paid" },
+  });
+
+  if (count > 0) {
+    after(async () => {
+      const order = await prisma.order.findUnique({
+        where: { merchantOid: oid },
+        include: { product: { select: { name: true } } },
+      });
+      if (order) await notifyNewOrder(order, "card_paid");
     });
   }
 
-  // Shopier expects a plain "success" text response when handled
-  return new NextResponse("success", { status: 200 });
+  return go(`/odeme/basarili?${oidQuery}&paid=1`);
 }

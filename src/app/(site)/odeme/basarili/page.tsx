@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CheckCircle } from "lucide-react";
 
-type SP = Promise<{ oid?: string }>;
+type SP = Promise<{ oid?: string; paid?: string }>;
 
 export const metadata = {
   title: "Ödeme Başarılı",
@@ -12,7 +12,7 @@ export default async function PaymentSuccessPage({
 }: {
   searchParams: SP;
 }) {
-  const { oid } = await searchParams;
+  const { oid, paid } = await searchParams;
   return (
     <div className="mx-auto max-w-xl px-6 py-20 text-center">
       <CheckCircle className="size-16 text-brand-500 mx-auto mb-4" />
@@ -20,7 +20,9 @@ export default async function PaymentSuccessPage({
         Siparişiniz alındı
       </h1>
       <p className="mt-3 text-ink-700">
-        Ödemeniz alınır alınmaz çiçeğinizi hazırlamaya başlayacağız.
+        {paid
+          ? "Ödemeniz alındı, çiçeğinizi hazırlamaya başlıyoruz."
+          : "Ödemeniz alınır alınmaz çiçeğinizi hazırlamaya başlayacağız."}
       </p>
       {oid ? (
         <div className="mt-6 inline-block px-5 py-3 bg-brand-50 border border-brand-200 rounded-lg">

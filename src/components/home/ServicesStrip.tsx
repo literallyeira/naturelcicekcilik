@@ -4,7 +4,7 @@ const ITEMS = [
   {
     icon: Truck,
     title: "Aynı Gün Teslimat",
-    description: "İzmir'in tüm ilçelerine, seçtiğiniz saat aralığında.",
+    description: "Karşıyaka, Bayraklı ve Bornova'ya, seçtiğiniz saat aralığında.",
   },
   {
     icon: Sparkles,

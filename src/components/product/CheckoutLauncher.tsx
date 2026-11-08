@@ -11,9 +11,14 @@ type Props = {
     image: string | null;
   };
   deliveryHours: { id: number; timeSlot: string }[];
+  cardEnabled?: boolean;
 };
 
-export function CheckoutLauncher({ product, deliveryHours }: Props) {
+export function CheckoutLauncher({
+  product,
+  deliveryHours,
+  cardEnabled,
+}: Props) {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -33,6 +38,7 @@ export function CheckoutLauncher({ product, deliveryHours }: Props) {
           endpoint="/api/checkout"
           payload={{ productId: product.id }}
           deliveryHours={deliveryHours}
+          cardEnabled={cardEnabled}
           onClose={() => setOpen(false)}
         />
       ) : null}

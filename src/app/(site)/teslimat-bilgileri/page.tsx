@@ -4,7 +4,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata = pageMetadata({
   title: "Teslimat Bilgileri — İzmir Aynı Gün Çiçek Teslimatı",
   description:
-    "İzmir'in tüm ilçelerine aynı gün çiçek teslimatı. Teslimat saatleri, ücretsiz kargo koşulları ve teslimat süreci hakkında bilmeniz gerekenler.",
+    "Karşıyaka, Bayraklı ve Bornova'ya aynı gün çiçek teslimatı. Teslimat saatleri, ücretsiz kargo koşulları ve teslimat süreci hakkında bilmeniz gerekenler.",
   path: "/teslimat-bilgileri",
 });
 
@@ -17,8 +17,8 @@ export default function DeliveryInfoPage() {
       <div className="content text-ink-600 leading-relaxed space-y-4">
         <h2>Teslimat Bölgeleri</h2>
         <p>
-          İzmir il merkezi ve tüm ilçelerine aynı gün teslimat hizmeti
-          sunulmaktadır. Şehir dışı siparişler için kargo seçeneği mevcuttur.{" "}
+          Şu an yalnızca Karşıyaka, Bayraklı ve Bornova ilçelerine aynı gün
+          teslimat yapıyoruz. Bu ilçeler dışına sipariş alınmamaktadır.{" "}
           <Link
             href="/izmir-cicekci"
             className="text-brand-600 underline underline-offset-4"
@@ -36,7 +36,7 @@ export default function DeliveryInfoPage() {
         </ul>
         <h2>Teslimat Ücretleri</h2>
         <p>
-          500 TL ve üzeri siparişlerde İzmir içi teslimat ücretsizdir.
+          500 TL ve üzeri siparişlerde teslimat ücretsizdir.
           500 TL altındaki siparişler için 50 TL teslimat ücreti
           uygulanır.
         </p>

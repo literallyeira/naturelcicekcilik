@@ -7,6 +7,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { SITE_NAME, SITE_URL, pageMetadata } from "@/lib/seo";
 import { MIN_STEMS } from "@/lib/bouquet";
 import { getBouquetCatalog } from "@/lib/bouquetCatalog";
+import { isShopierConfigured } from "@/lib/shopier";
 
 // Admin panelden fiyat değişince sayfa en geç 5 dakikada tazelenir.
 export const revalidate = 300;
@@ -113,6 +114,7 @@ export default async function CustomBouquetPage() {
             id: h.id,
             timeSlot: h.timeSlot,
           }))}
+          cardEnabled={isShopierConfigured()}
         />
       </div>
 

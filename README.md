@@ -45,6 +45,7 @@ yeni bir bcrypt hash yazabilirsin.
 4. **Environment Variables** kısmından şunları ekle:
    - `SESSION_PASSWORD` — `openssl rand -base64 48` ile üret
    - `SHOPIER_API_KEY`, `SHOPIER_API_SECRET`, `SHOPIER_WEBSITE_INDEX` — Shopier panelinden
+   - `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` ve/veya `CALLMEBOT_PHONE` + `CALLMEBOT_APIKEY` — yeni sipariş bildirimi (bkz. `.env.example`)
    - `NEXT_PUBLIC_SITE_URL` — `https://senin-domain.com`
 5. Deploy et.
 6. İlk deploy sonrası lokal'den:
@@ -56,12 +57,17 @@ yeni bir bcrypt hash yazabilirsin.
 
 ## Shopier Entegrasyonu
 
-`SHOPIER_*` değişkenleri boşken sipariş veritabanına kaydedilir ama
-ödeme sayfasına yönlendirme yapılmaz — kullanıcıya "ödeme şu an
-alınamıyor, sizi arayacağız" mesajı gösterilir. Credentials eklenince
-otomatik olarak Shopier'e POST edilen form çalışmaya başlar.
+Sipariş formunun son adımında müşteri **Kredi / Banka Kartı** ya da
+**Havale / EFT** seçer. `SHOPIER_*` değişkenleri boşken kart seçeneği
+gizlenir ve tüm siparişler havaleye düşer (IBAN: `src/lib/site.ts` →
+`BANK`). Credentials eklenip yeniden deploy edilince kart seçeneği
+otomatik görünür.
 
-Webhook URL'si Shopier paneline girilirken:
+Teslimat yalnızca `src/lib/districts.ts` içindeki ilçelere yapılır;
+hem form hem API bu listeyi kullanır.
+
+Shopier panelinde **Geri dönüş URL**'si olarak bunu gir (ödeme sonrası
+müşteri buraya döner, sipariş "ödendi" olur ve bildirim gider):
 ```
 https://senin-domain.com/api/shopier/callback
 ```

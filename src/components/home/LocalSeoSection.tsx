@@ -10,8 +10,8 @@ export function LocalSeoSection() {
         </h2>
         <div className="content mt-5 text-ink-600 leading-relaxed">
           <p>
-            Naturel Çiçekçilik, Bayraklı&apos;daki atölyesinden İzmir&apos;in
-            tüm ilçelerine aynı gün çiçek teslimatı yapar. Her sabah halden
+            Naturel Çiçekçilik, Bayraklı&apos;daki atölyesinden Karşıyaka,
+            Bayraklı ve Bornova&apos;ya aynı gün çiçek teslimatı yapar. Her sabah halden
             seçtiğimiz taze çiçeklerle hazırlanan gül buketleri, mevsim
             aranjmanları, orkideler ve saksı çiçekleri; siparişinizi verdiğiniz
             gün, seçtiğiniz saat aralığında sevdiklerinize ulaşır.
@@ -28,7 +28,7 @@ export function LocalSeoSection() {
             hesaplayın.
           </p>
 
-          <h3>Teslimat yaptığımız İzmir ilçeleri</h3>
+          <h3>Teslimat yaptığımız ilçeler</h3>
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
@@ -44,8 +44,7 @@ export function LocalSeoSection() {
         </div>
 
         <p className="mt-6 text-sm text-ink-500 leading-relaxed">
-          Listede olmayan bir adres için bizi arayın; İzmir genelinde teslimat
-          seçeneklerimizi birlikte değerlendirelim.
+          Şu an yalnızca bu üç ilçeye teslimat yapıyoruz.
         </p>
       </div>
     </section>

@@ -5,9 +5,9 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
-  title: "İzmir Çiçekçi — Tüm İlçelere Teslimat",
+  title: "İzmir Çiçekçi — Karşıyaka, Bayraklı, Bornova Teslimat",
   description:
-    "Bayraklı, Karşıyaka, Bornova, Konak, Çiğli, Buca ve tüm İzmir ilçelerine aynı gün taze çiçek teslimatı. İlçenizi seçin, teslimat sürelerini görün.",
+    "Bayraklı, Karşıyaka ve Bornova'ya aynı gün taze çiçek teslimatı. İlçenizi seçin, teslimat sürelerini görün.",
   path: "/izmir-cicekci",
 });
 
@@ -25,8 +25,8 @@ export default function DistrictIndexPage() {
           İzmir Çiçekçi
         </h1>
         <p className="mt-4 text-ink-600 max-w-2xl leading-relaxed">
-          Bayraklı&apos;daki atölyemizden İzmir&apos;in tüm ilçelerine taze çiçek
-          gönderiyoruz. İlçenizi seçin; teslimat sürelerini, kapsadığımız
+          Bayraklı&apos;daki atölyemizden Karşıyaka, Bayraklı ve Bornova&apos;ya
+          taze çiçek gönderiyoruz. İlçenizi seçin; teslimat sürelerini, kapsadığımız
           mahalleleri ve en çok tercih edilen buketleri görün.
         </p>
 

@@ -179,7 +179,7 @@ export function Footer() {
         <div className="mx-auto max-w-7xl px-6 py-6">
           <p className="text-xs text-ink-400 leading-relaxed">
             <span className="text-ink-300 font-medium">Teslimat bölgelerimiz:</span>{" "}
-            {SERVICE_AREAS.join(" · ")} ve tüm İzmir ilçeleri.
+            {SERVICE_AREAS.join(" · ")}
           </p>
         </div>
       </div>

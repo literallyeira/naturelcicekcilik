@@ -38,7 +38,7 @@ export async function generateMetadata({
 
   const description =
     data.category.description?.replace(/\s+/g, " ").trim().slice(0, 155) ??
-    `${data.category.name} — İzmir'e aynı gün teslimat. ${data.products.length} farklı seçenek, taze çiçekler, güvenli ödeme. Bayraklı, Karşıyaka, Bornova ve tüm İzmir.`;
+    `${data.category.name} — İzmir'e aynı gün teslimat. ${data.products.length} farklı seçenek, taze çiçekler, güvenli ödeme. Bayraklı, Karşıyaka ve Bornova.`;
 
   return pageMetadata({
     title: `${data.category.name} — İzmir Çiçek Siparişi`,

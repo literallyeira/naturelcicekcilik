@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { Truck, ShieldCheck, Clock, Flower2 } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { formatPrice } from "@/lib/format";
+import { isShopierConfigured } from "@/lib/shopier";
 import { CheckoutLauncher } from "@/components/product/CheckoutLauncher";
 import { ProductCard } from "@/components/product/ProductCard";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -191,6 +192,7 @@ export default async function ProductPage({ params }: { params: Params }) {
                 id: h.id,
                 timeSlot: h.timeSlot,
               }))}
+              cardEnabled={isShopierConfigured()}
             />
 
             <Link
